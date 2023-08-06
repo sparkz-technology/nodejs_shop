@@ -1,56 +1,60 @@
-const path = require('path');
+require("dotenv").config();
+const path = require("path");
 
-const express = require('express');
-const bodyParser = require('body-parser');
-const mongoose = require('mongoose');
+const express = require("express");
+const bodyParser = require("body-parser");
+const mongoose = require("mongoose");
 
-const errorController = require('./controllers/error');
-const User = require('./models/user');
+const errorController = require("./controllers/error");
+const User = require("./models/user");
 
 const app = express();
 
-app.set('view engine', 'ejs');
-app.set('views', 'views');
+app.set("view engine", "ejs");
+app.set("views", "views");
 
-const adminRoutes = require('./routes/admin');
-const shopRoutes = require('./routes/shop');
+const adminRoutes = require("./routes/admin");
+const shopRoutes = require("./routes/shop");
 
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, "public")));
 
 app.use((req, res, next) => {
-  User.findById('5bab316ce0a7c75f783cb8a8')
-    .then(user => {
+  User.findById("64cf696f1687441368b0e1b0")
+    .then((user) => {
       req.user = user;
       next();
     })
-    .catch(err => console.log(err));
+    .catch((err) => console.log(err));
 });
 
-app.use('/admin', adminRoutes);
+app.use("/admin", adminRoutes);
 app.use(shopRoutes);
 
 app.use(errorController.get404);
 
 mongoose
-  .connect(
-    'mongodb+srv://maximilian:9u4biljMQc4jjqbe@cluster0-ntrwp.mongodb.net/shop?retryWrites=true'
-  )
-  .then(result => {
-    User.findOne().then(user => {
+  .connect(process.env.MONGODB_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then((result) => {
+    User.findOne().then((user) => {
       if (!user) {
         const user = new User({
-          name: 'Max',
-          email: 'max@test.com',
+          name: "sparkz",
+          email: "sparkz@test.com",
           cart: {
-            items: []
-          }
+            items: [],
+          },
         });
         user.save();
       }
     });
-    app.listen(3000);
+    app.listen(3000, () => {
+      console.log("server started");
+    });
   })
-  .catch(err => {
+  .catch((err) => {
     console.log(err);
   });
