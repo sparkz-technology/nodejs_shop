@@ -42,6 +42,14 @@
           >Login</a
         >
       </li>
+
+      <li class="main-header__item">
+        <form action="/logout" method="POST">
+          <a class="<%= path === '/logout' ? 'active' : '' %>" href="/logout"
+            >Logout</a
+          >
+        </form>
+      </li>
     </ul>
   </nav>
 </header>
