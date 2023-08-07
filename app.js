@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const session = require("express-session");
 const MongoDBStore = require("connect-mongodb-session")(session);
+const csrf = require("csurf");
 
 const errorController = require("./controllers/error");
 const User = require("./models/user");
@@ -14,6 +15,8 @@ const store = new MongoDBStore({
   uri: process.env.MONGODB_URI,
   collection: "sessions",
 }); // this is a class that we can instantiate
+
+const csrfProtection = csrf();
 
 app.set("view engine", "ejs");
 app.set("views", "views");
@@ -32,7 +35,7 @@ app.use(
     store: store,
   })
 );
-
+app.use(csrfProtection); // this must be after the session middleware
 app.use((req, res, next) => {
   if (!req.session.user) {
     return next();
@@ -43,6 +46,14 @@ app.use((req, res, next) => {
       next();
     })
     .catch((err) => console.log(err));
+});
+
+// this is a middleware that will be executed for every request
+// we can add data to the response object
+app.use((req, res, next) => {
+  res.locals.isAuthenticated = req.session.isLoggedIn;
+  res.locals.csrfToken = req.csrfToken(); // this is a method provided by the csurf package
+  next();
 });
 
 app.use("/admin", adminRoutes);
