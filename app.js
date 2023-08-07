@@ -1,11 +1,10 @@
 require("dotenv").config();
 const path = require("path");
-
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const session = require("express-session");
-const MongoDBStore = require("connect-mongodb-session")(session); // this is a function that returns a class
+const MongoDBStore = require("connect-mongodb-session")(session);
 
 const errorController = require("./controllers/error");
 const User = require("./models/user");
@@ -35,7 +34,10 @@ app.use(
 );
 
 app.use((req, res, next) => {
-  User.findById("64cf707ffc33ca25d03bfb26")
+  if (!req.session.user) {
+    return next();
+  }
+  User.findById(req.session.user._id)
     .then((user) => {
       req.user = user;
       next();
