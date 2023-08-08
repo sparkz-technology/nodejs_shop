@@ -44,6 +44,9 @@ app.use((req, res, next) => {
   }
   User.findById(req.session.user._id)
     .then((user) => {
+      if (!user) {
+        return next(); // this will not block the request, it will just continue
+      }
       req.user = user;
       next();
     })
