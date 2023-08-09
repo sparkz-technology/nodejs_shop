@@ -1,0 +1,18 @@
+<section class="pagination">
+  <% const visiblePages = 5; %> <% const startPage = Math.max(currentPage -
+  Math.floor(visiblePages / 2), 1); %> <% const endPage = Math.min(startPage +
+  visiblePages - 1, lastPage); %> <% if (currentPage > 1) { %>
+  <a href="?page=1">First</a>
+  <% } %> <% if (startPage > 1) { %>
+  <span>...</span>
+  <% } %> <% for (let page = startPage; page <= endPage; page++) { %> <% if
+  (page === currentPage) { %>
+  <a href="?page=<%= page %>" class="active"><%= page %></a>
+  <% } else { %>
+  <a href="?page=<%= page %>"><%= page %></a>
+  <% } %> <% } %> <% if (endPage < lastPage) { %>
+  <span>...</span>
+  <% } %> <% if (currentPage < lastPage) { %>
+  <a href="?page=<%= lastPage %>">Last</a>
+  <% } %>
+</section>
